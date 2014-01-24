@@ -9,70 +9,8 @@
     <link rel="stylesheet" href="http://js.arcgis.com/3.8/js/esri/css/esri.css">
     <link rel="stylesheet" href="css/layout.css">
 
-
     <script src="http://js.arcgis.com/3.8/"></script>
-    <script>
-      require([
-        "dojo/parser",
-        "dojo/ready",
-        "dijit/layout/BorderContainer",
-        "dijit/layout/ContentPane",
-        "dojo/dom",
-        "esri/map", 
-        "esri/urlUtils",
-        "esri/arcgis/utils",
-        "esri/dijit/Legend",
-        "esri/dijit/Scalebar",
-        "dojo/domReady!"
-      ], function(
-        parser,
-        ready,
-        BorderContainer,
-        ContentPane,
-        dom,
-        Map,
-        urlUtils,
-        arcgisUtils,
-        Legend,
-        Scalebar
-      ) {
-        ready(function(){
-
-        parser.parse();
-
-
-        arcgisUtils.createMap("5bf2421c69414c8f81719b93da369fa9","map").then(function(response){
-          //update the app 
-          dom.byId("title").innerHTML = response.itemInfo.item.title;
-          dom.byId("subtitle").innerHTML = response.itemInfo.item.snippet;
-
-          var map = response.map;
-
-
-
-          //add the scalebar 
-          var scalebar = new Scalebar({
-            map: map,
-            scalebarUnit: "english"
-          });
-
-          //add the legend. Note that we use the utility method getLegendLayers to get 
-          //the layers to display in the legend from the createMap response.
-          var legendLayers = arcgisUtils.getLegendLayers(response); 
-          var legendDijit = new Legend({
-            map: map,
-            layerInfos: legendLayers
-          },"legend");
-          legendDijit.startup();
-
-
-        });
-
-
-        });
-
-      });
-    </script>
+    <script src="js/init.js"></script>
   </head>
 
   <body class="claro">
@@ -82,7 +20,7 @@
         <div id="subtitle"></div>
       </div>
       <div id="leftPane" class="roundedCorners shadow" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'left'" >
-        <div id="legend"></div>
+        <div id="filter"></div>
       </div>
       <div id="map" class="roundedCorners shadow" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'"></div>
     </div>
