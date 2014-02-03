@@ -16,11 +16,7 @@ define([
 							'<div data-dojo-attach-point="ul_el" class="filterBox list-group small">' +
 							'</div>' +
 							'</div>',
-			templateString2: '<div>'+
-							'<span>${label}</span>' +
-							'<div  style="width:100pt" data-dojo-attach-point="ul_el" class="btn-group">' +
-							'</ul>' +
-							'</div>',
+
 			data: [],
 			label: "",
 
@@ -38,16 +34,7 @@ define([
 		            var liEl = domConstruct.create("a", liElAtts, this.ul_el, "last");
 		            var iconEl = domConstruct.create("i", {className:"fa fa-check-square fa-fw"}, liEl, "first");
 
-		            // var liElAtts = {
-		            // 	className:"btn btn-primary btn-block", 
-		            // 	innerHTML: uv,
-		            // 	onclick: this.filterClickHandler
-		            // }
-		            // var liEl = domConstruct.create("a", liElAtts, this.ul_el, "last");
-		            // var iconEl = domConstruct.create("i", {className:"fa fa-check-square"}, liEl, "first");
-
-
-		      }
+		    	}
 			},
 
 			filterClickHandler: function(event) {

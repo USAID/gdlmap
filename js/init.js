@@ -42,7 +42,7 @@
 
         parser.parse();
 
-        request("cfg/filters.cfg", {handleAs: 'json'}).then(function(v) {
+        request("cfg/filters.json", {handleAs: 'json'}).then(function(v) {
           filter_cfg = v;
           arcgisUtils.createMap("5bf2421c69414c8f81719b93da369fa9","map").then(function(response){
             //update the app 
