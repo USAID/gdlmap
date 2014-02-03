@@ -1,0 +1,11 @@
+[
+{
+	"column": "Activity_Type",
+	"label": "Activity Type",
+	"type": "IN"
+}, {
+	"column": "GDL_Team",
+	"label": "GDL Team",
+	"type": "IN"	
+}
+]

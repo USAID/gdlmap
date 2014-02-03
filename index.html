@@ -5,24 +5,36 @@
     <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
     <title>Create web map from id</title>
 
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <link rel="stylesheet" href="js/libs/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="http://js.arcgis.com/3.8/js/dojo/dijit/themes/claro/claro.css">
     <link rel="stylesheet" href="http://js.arcgis.com/3.8/js/esri/css/esri.css">
     <link rel="stylesheet" href="css/layout.css">
 
+   <script>
+   var dojoConfig = {
+    packages: [{
+      name: "gdljs",
+      //location: location.pathname.replace(/\/[^/]*$/, '')
+      location: location.pathname + "js"
+    }]
+  };</script>
+
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <script src="js/libs/bootstrap/js/bootstrap.min.js"></script>
     <script src="http://js.arcgis.com/3.8/"></script>
     <script src="js/init.js"></script>
   </head>
 
   <body class="claro">
     <div id="mainWindow" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="design:'headline'" style="width:100%; height:100%;">
-      <div id="header" class="shadow roundedCorners" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'top'">
-        <div id="title"></div>
-        <div id="subtitle"></div>
-      </div>
-      <div id="leftPane" class="roundedCorners shadow" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'left'" >
+      <div id="leftPane" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'left'" >
+        <div id="title" class="lead"></div>
+        <div id="subtitle" class="small"></div>        
         <div id="filter"></div>
       </div>
-      <div id="map" class="roundedCorners shadow" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'"></div>
+      <div id="map" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'"></div>
+      <!--<div id="map" class="roundedCorners shadow" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'"></div>-->
     </div>
   </body>
 </html>
