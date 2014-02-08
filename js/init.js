@@ -1,9 +1,11 @@
-      var filter_cfg = [];
+      var filter_cfg = [], opLayerStore = null, map = null;
 
       require([
         "dojo/parser",
         "dojo/ready",
         "dojo/_base/lang",
+        "dojo/_base/Color",
+        "dojo/_base/array",
         "dijit/layout/BorderContainer",
         "dijit/layout/ContentPane",
         "dojo/dom",
@@ -15,14 +17,23 @@
         "esri/map", 
         "esri/urlUtils",
         "esri/arcgis/utils",
+        "esri/graphic",
+        "esri/symbols/SimpleFillSymbol",
+        "esri/symbols/SimpleLineSymbol",
+        "esri/InfoTemplate",
         "esri/dijit/Legend",
         "esri/dijit/Scalebar",
+        "esri/dijit/Popup",
         "gdljs/MultiselectFilterView",
+        "gdljs/Filter",
+        "gdljs/LayerStore",
         "dojo/domReady!"
       ], function(
         parser,
         ready,
         lang,
+        Color,
+        array,
         BorderContainer,
         ContentPane,
         dom,
@@ -34,22 +45,52 @@
         Map,
         urlUtils,
         arcgisUtils,
+        Graphic,
+        SimpleFillSymbol,
+        SimpleLineSymbol,
+        InfoTemplate,
         Legend,
         Scalebar,
-        MultiselectFilterView
+        Popup,
+        MultiselectFilterView,
+        Filter,
+        LayerStore
       ) {
         ready(function(){
 
         parser.parse();
 
         request("cfg/filters.json", {handleAs: 'json'}).then(function(v) {
+
           filter_cfg = v;
+
           arcgisUtils.createMap("5bf2421c69414c8f81719b93da369fa9","map").then(function(response){
+
+            // Remove map click handler - we'll have our own
+            if (response.clickEventHandle) {
+              response.clickEventHandle.remove();
+            }
+
+            // var popup = new Popup({
+            //     fillSymbol: new SimpleFillSymbol(
+            //         SimpleFillSymbol.STYLE_SOLID, 
+            //         new SimpleLineSymbol(
+            //             SimpleLineSymbol.STYLE_SOLID, 
+            //             new Color([255,0,0]), 2), 
+            //         new Color([255,255,0,0.25]))
+            // }, domConstruct.create("div"));
+
+            map = response.map;
+            // map.infoWindow = popup;
+
+            var infoTemplate = new InfoTemplate("Attributes", getPopupContent);
+            var opLayer = response.itemInfo.itemData.operationalLayers[0].layerObject;
+            opLayer.infoTemplate = infoTemplate;
+            on(opLayer, 'click', projectClickHandler)
+
             //update the app 
             dom.byId("title").innerHTML = response.itemInfo.item.title;
             dom.byId("subtitle").innerHTML = response.itemInfo.item.snippet;
-
-            var map = response.map;
 
             //add the scalebar 
             var scalebar = new Scalebar({
@@ -69,13 +110,59 @@
             }
 
             if (dom.byId("filter")) {
-              var opLayer = response.itemInfo.itemData.operationalLayers[0].layerObject;
-              on.once(opLayer, 'update-end', lang.partial(createFilterUI, opLayer));
+              on.once(opLayer, 'update-end', lang.partial(initializeFilters, opLayer));
             }
 
           });
         });
       });
+
+      function initializeFilters(opLayer) {
+          console.debug("Initialize filter");
+          var rootEl = dom.byId("filter");
+          try {
+              var ls = new LayerStore(opLayer);
+              opLayerStore = ls;
+              for (var i = 0; i < filter_cfg.length; i++) {
+                  var flt = new Filter(filter_cfg[i], ls);                  
+                  filter_cfg[i].filter = flt;
+
+                  var filterForm = new MultiselectFilterView({
+                      "data": flt.get("values"),
+                      "label": flt.get("label")
+                  }, domConstruct.create("div", null, rootEl, "last"));
+
+                  filterForm.watch("selectedValues", function(prop, oldV, newV) {
+                      flt.set("selectedValues", newV);
+                  });
+              }
+          } catch (e) {
+              console.error(e);
+          }
+      }
+
+      function projectClickHandler(event) {
+          console.debug("Project clciked");
+          var country = event.graphic.attributes.Country;
+          var projects = opLayerStore.queryFiltered({'Country': country});
+          var graphics = array.map(projects, function(item){return item._graphic});
+          var dummyGraphic = new Graphic(graphics[0].toJson());
+          dummyGraphic.setAttributes({'_projects': projects, 'Country': country});
+          graphics.unshift(dummyGraphic);
+          map.infoWindow.setFeatures(graphics);
+          map.infoWindow.show(event.mapPoint);
+          map.infoWindow.setContent("There are " + projects.length + " projects in " + country)
+          console.debug("End Project clciked");
+      }
+
+      function getPopupContent(graphic) {
+          if (graphic._projects) {
+              return "There are " + graphic._projects.length + " projects in " + graphic.Country
+          } else {
+              return "Project details for " + graphic.attributes.Unique_ID
+          }
+      }
+        /*
 
       function createFilterUI(opLayer) {
         console.debug("Update filter ui");
@@ -119,7 +206,6 @@
           console.debug("End update filter ui");
         }
 
-        /*
         for (var i = 0; i < opLayer.graphics.length; i++) {
           var rec = opLayer.graphics[i].attributes;
           rec._graphic = opLayer.graphics[i];
@@ -167,8 +253,9 @@
             var lblatts = {innerHTML: at, 'for': "atcb_" + i}
             var lbl = domConstruct.create("label", lblatts, lbld, "last");
           }
-          */
+          
         }
+
 
         function filterUpdateHandler() {
           for (var i = 0; i < filter_cfg.length; i++) {
@@ -226,4 +313,5 @@
             graphic.hide();
           }
         }
+        */
       });
