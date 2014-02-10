@@ -1,4 +1,4 @@
-      var filter_cfg = [], opLayerStore = null, map = null;
+      var filter_cfg = [], opLayerStore = null, map = null, ui = {};
 
       require([
         "dojo/parser",
@@ -8,6 +8,7 @@
         "dojo/_base/array",
         "dijit/layout/BorderContainer",
         "dijit/layout/ContentPane",
+        "dijit/Dialog",
         "dojo/dom",
         "dojo/dom-construct",
         "dojo/on",
@@ -25,6 +26,7 @@
         "esri/dijit/Scalebar",
         "esri/dijit/Popup",
         "gdljs/MultiselectFilterView",
+        "gdljs/CountryProjectList",
         "gdljs/Filter",
         "gdljs/LayerStore",
         "dojo/domReady!"
@@ -36,6 +38,7 @@
         array,
         BorderContainer,
         ContentPane,
+        Dialog,
         dom,
         domConstruct,
         on,
@@ -53,6 +56,7 @@
         Scalebar,
         Popup,
         MultiselectFilterView,
+        CountryProjectList,
         Filter,
         LayerStore
       ) {
@@ -81,6 +85,7 @@
             // }, domConstruct.create("div"));
 
             map = response.map;
+            //map.infoWindow.setContent(getPopupContent);
             // map.infoWindow = popup;
 
             var infoTemplate = new InfoTemplate("Attributes", getPopupContent);
@@ -110,12 +115,15 @@
             }
 
             if (dom.byId("filter")) {
-              on.once(opLayer, 'update-end', lang.partial(initializeFilters, opLayer));
+                on.once(opLayer, 'update-end', function() {
+                    initializeFilters(opLayer);
+                    initializeDialog();
+                });
             }
 
-          });
-        });
-      });
+          }); // create map, then
+        });  // request cfg_filters, then
+      });  // ready
 
       function initializeFilters(opLayer) {
           console.debug("Initialize filter");
@@ -141,26 +149,49 @@
           }
       }
 
+      function initializeDialog() {
+          ui.cpWidget = new CountryProjectList({
+              store: opLayerStore
+          }, domConstruct.create("div"));      
+
+          ui.projectDialog = new Dialog({
+              content: ui.cpWidget
+          });
+
+      }
+
       function projectClickHandler(event) {
           console.debug("Project clciked");
           var country = event.graphic.attributes.Country;
-          var projects = opLayerStore.queryFiltered({'Country': country});
-          var graphics = array.map(projects, function(item){return item._graphic});
-          var dummyGraphic = new Graphic(graphics[0].toJson());
-          dummyGraphic.setAttributes({'_projects': projects, 'Country': country});
-          graphics.unshift(dummyGraphic);
-          map.infoWindow.setFeatures(graphics);
-          map.infoWindow.show(event.mapPoint);
-          map.infoWindow.setContent("There are " + projects.length + " projects in " + country)
+
+          ui.projectDialog.show();
+          ui.cpWidget.set("country", country);
+          ui.projectDialog.set("title", "Projects in " + country);
+
+          // var projects = opLayerStore.queryFiltered({'Country': country});
+          // var graphics = array.map(projects, function(item){return item._graphic});
+          // var dummyGraphic = new Graphic(graphics[0].toJson());
+          // dummyGraphic.setAttributes({'_projects': projects, 'Country': country});
+          // graphics.unshift(dummyGraphic);
+          // map.infoWindow.setFeatures(graphics);
+          // map.infoWindow.show(event.mapPoint);
+          //map.infoWindow.setContent("There are " + projects.length + " projects in " + country);
+          
           console.debug("End Project clciked");
       }
 
       function getPopupContent(graphic) {
+          console.debug("Setting content");
+          var retVal = "";
           if (graphic._projects) {
-              return "There are " + graphic._projects.length + " projects in " + graphic.Country
+
+              retVal = cpWidget.domNode;
+              //return "There are " + graphic._projects.length + " projects in " + graphic.Country
           } else {
-              return "Project details for " + graphic.attributes.Unique_ID
+              retVal = "Project details for " + graphic.attributes.Unique_ID
           }
+          console.debug("End setting content");
+          return retVal;
       }
         /*
 

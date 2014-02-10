@@ -71,3 +71,28 @@
     height: 200pt;
     overflow: auto;
   }
+
+  .projectListContainer{
+    width: 400pt;
+    height: 200pt;
+    overflow: auto;
+  }
+
+  .projectListItem{
+    width: 90pt;
+    height: 50pt;
+    display: block;
+    float: left;
+    font-size: 8pt;
+    color: #6c6d6f;
+    margin: 2px;
+    padding: 2px;
+    background-color: #E8E8E8;
+    overflow-y: hidden;
+    white-space: pre-wrap;
+    border-radius: 0px;
+    border-style: none;
+  }
+  .projectListItem:hover{
+    color: #221f1f;
+  }
