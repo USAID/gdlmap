@@ -30,12 +30,17 @@ define([
 		            var uv = this.data[i]
 
 		            var liElAtts = {
-		            	className:"list-group-item  list-group-item-success", 
+		            	className:"list-group-item selected", 
 		            	innerHTML: uv,
 		            	onclick: lang.hitch(this, this.filterClickHandler)
 		            }
 		            var liEl = domConstruct.create("a", liElAtts, this.ul_el, "last");
-		            var iconEl = domConstruct.create("i", {className:"fa fa-check-square fa-fw"}, liEl, "first");
+		            //var iconEl = domConstruct.create("i", {className:"fa fa-check-square fa-fw"}, liEl, "first");
+
+		            var liIconAtts = {
+		            	className: "glyphicon glyphicon-ok filterItemIcon selected"
+		            }
+		            var iconEl = domConstruct.create("span", liIconAtts, liEl, "first");
 		    	}
 
 		    	this.selectedValues = this.data;
@@ -43,17 +48,15 @@ define([
 
 			filterClickHandler: function(event) {
 				console.debug("Clicked");
-				if (domClass.contains(event.target, "list-group-item-success")) {
-					domClass.remove(event.target, "list-group-item-success");
-					domClass.remove(event.target.children[0], "fa-check-square");
-					domClass.add(event.target.children[0], "fa-square");
+				if (domClass.contains(event.currentTarget, "selected")) {
+					domClass.remove(event.currentTarget, "selected");
+					domClass.remove(event.currentTarget.children[0], "selected");
 				} else {
-					domClass.add(event.target, "list-group-item-success");
-					domClass.remove(event.target.children[0], "fa-square");
-					domClass.add(event.target.children[0], "fa-check-square");
+					domClass.add(event.currentTarget, "selected");
+					domClass.add(event.currentTarget.children[0], "selected");
 				}
 				var vl = [];
-				query(".list-group-item-success", this.ul_el).forEach(function(node) {
+				query(".list-group-item.selected", this.ul_el).forEach(function(node) {
 					vl.push(node.text);
 				});
 				this.set('selectedValues', vl);

@@ -2,6 +2,7 @@ define([
 	"dojo/_base/declare",
 	"dojo/_base/lang",
 	"dojo/_base/array",
+	"dojo/on",
     "dojo/dom",
     "dojo/dom-construct",
     "dojo/dom-attr",
@@ -13,7 +14,7 @@ define([
 	"dojo/store/Memory", 
 	"dijit/form/FilteringSelect",
     "dojo/NodeList-traverse"  // no mapping required
-	], function(declare, lang, array, dom, domConstruct, domAttr, domClass, query, Stateful,
+	], function(declare, lang, array, on, dom, domConstruct, domAttr, domClass, query, Stateful,
 				_WidgetBase, _TemplatedMixin, Memory, FilteringSelect){
 
 		return declare("CountryProjectList", [_WidgetBase, _TemplatedMixin], {
@@ -22,6 +23,16 @@ define([
 							'<div data-dojo-attach-point="filter_cb_el"></div>' +
 							'<hr>' +
 							'<div data-dojo-attach-point="list_el" class="projectListContainer"></div>' +
+							'<div data-dojo-attach-point="details_container_el" class="detailsContainer">' +
+								'<ul class="nav nav-pills">' +
+  							    	'<li><a data-dojo-attach-point="pr_details_back" href="#">Back to List</a></li>' +
+  							    	//'<li><a data-dojo-attach-point="pr_details_prev" href="#">Previous</a></li>' +
+  							    	//'<li><a data-dojo-attach-point="pr_details_next" href="#">Next</a></li>' +
+								'</ul>' +
+								'<div data-dojo-attach-point="pr_details_title" class="prDetails title"></div>' +
+								'<hr>' +
+								'<div data-dojo-attach-point="pr_details"></div>'+
+							'</div>' +
 							'</div>',
 			store: null,
 
@@ -36,6 +47,24 @@ define([
 			nameColumn: "Activity_Name",
 			descriptionColumn: "Activity_Description",
 
+			detailsColumns: [{
+				column: "Activity_Type",
+				label:  "Activity Type"
+			},{
+				column: "Activity_Description",
+				label:  "Activity Decritpion"
+			},{
+				column: "GDL_Team",
+				label:  "GDL Team"
+			},{
+				column: "Country",
+				label:  "Country"				
+			},{
+				column: "Crosscutting_Sector",
+				label:  "Sector"
+
+			}],
+
 			_filterStore: new Memory({data:{}}),
 			_filterWidget: null,
 			_filterValue: null,
@@ -44,11 +73,15 @@ define([
 
 				if (this.country) this._countryChanged(this.country);
 
+				on(this.pr_details_back, "click", lang.hitch(this, function(e) {
+					this.details_container_el.style.display = "none";
+				}));
+
 				this._filterWidget = new FilteringSelect({
 					store: this._filterStore,
-					onChange: this._filterChanged
+					onChange: lang.hitch(this, this._filterChanged)
 				}, this.filter_cb_el);
-				this._filterWidget.on("change", this._filterChanged);
+				this._filterWidget.startup();
 			},
 
 			_countryChanged: function() {
@@ -66,10 +99,11 @@ define([
 				}
 				uniqueValues.sort();
 				uniqueValues.unshift("All");
-				this._filterStore = new Memory({data: array.map(uniqueValues, function(v){return {'name': v};})});
+				this._filterStore = new Memory({data: array.map(uniqueValues, function(v){return {'name': v, 'id': v};})});
 				if (this._filterWidget) {
 					this._filterWidget.set("store", this._filterStore);
 					this._filterWidget.set("value", uniqueValues[0]);
+					this._filterWidget.set("displayedValue", uniqueValues[0]);
 				}
 
 				this._updateProjectList();
@@ -77,10 +111,13 @@ define([
 
 			_filterChanged: function(val) {
 				console.debug("Filter changed");
+				this._filterValue = val;
+				this._updateProjectList();
 			},
 
 			_updateProjectList: function() {
 				domConstruct.empty(this.list_el);
+
 				var prList = this._queryStore();
 				for (var i =0; i < prList.length; i++) {
 					var pr = prList[i];
@@ -93,13 +130,13 @@ define([
 					var prAtts = {
 						className: "btn btn-default projectListItem",
 						innerHTML: pr[this.nameColumn],
+						onclick: lang.hitch(this, this._showProjectDetails),
 					};
 					if (pr[this.descriptionColumn]) {
 						prAtts.title = pr[this.descriptionColumn],
 						prAtts.data_toggle = "tooltip"
 					}
 					var prEl = domConstruct.create("button", prAtts,this.list_el, "last");
-
 				}
 			},
 
@@ -108,12 +145,43 @@ define([
 				if (this.country) {
 					q[this.countryColumn] = this.country;
 				}
-				if (this._filterValue) {
+				if (this._filterValue && this._filterValue != "All") {
 					q[this.filterColumn] = this._filterValue;
 				}
 				return this.store.queryFiltered(q);
+			},
+
+			_showProjectDetails: function(event) {
+				console.debug("Showing project details");
+				var prName = event.target.textContent;
+				var q = {}
+				q[this.nameColumn] = prName;
+				var prData = this.store.queryFiltered(q)[0];
+				this.pr_details_title.innerHTML = prData[this.nameColumn];
+
+				domConstruct.empty(this.pr_details);
+
+				for (var i = 0; i < this.detailsColumns.length; i++) {
+					var column = this.detailsColumns[i].column;
+					var label = this.detailsColumns[i].label;
+					var value = prData[column];
+
+					var labelElAtts = {
+						className: "prDetails label",
+						innerHTML: label
+					}
+					var labelEl = domConstruct.create("div", labelElAtts, this.pr_details, "last");
+
+					var valueElAtts = {
+						className: "prDetails value",
+						innerHTML: value
+					}
+					var valueEl = domConstruct.create("div", valueElAtts, this.pr_details, "last");
+					domConstruct.create("div", {style: "clear: both; width: 100%; height: 1px"}, this.pr_details, "last");
+				}
+
+				this.details_container_el.style.display = "block";
 			}
-		
 
 		});  // Return declare
 	}); //define
