@@ -88,6 +88,8 @@ define([
 
 				if (!this.store) return;
 
+				this.details_container_el.style.display = "none";
+
 				this._filterValue = null;
 				var countryRecords = this._queryStore();
 				var uniqueValues = [];
@@ -156,6 +158,7 @@ define([
 				var prName = event.target.textContent;
 				var q = {}
 				q[this.nameColumn] = prName;
+				q[this.countryColumn] = this.country;
 				var prData = this.store.queryFiltered(q)[0];
 				this.pr_details_title.innerHTML = prData[this.nameColumn];
 
