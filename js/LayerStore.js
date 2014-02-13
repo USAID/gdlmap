@@ -14,8 +14,13 @@ define ([
 
 		constructor: function(opLayer) {
 
-			var lData = [];
 			this.filters = [];
+            this.refreshData(opLayer);
+            console.debug("Constructed layer store");
+        },
+
+        refreshData: function(opLayer) {
+            var lData = [];
             for (var j = 0; j < opLayer.graphics.length; j++) {
                 var rec = opLayer.graphics[j].attributes;
                 rec._graphic = opLayer.graphics[j];
@@ -24,7 +29,9 @@ define ([
             }
             //this.inherited({data: lData});
             this.data = lData;
-            console.debug("Constructed layer store");
+            if (this.filters.length > 0) {
+                this.filter();
+            }
         },
 
         // Does not take into acount the filter
@@ -64,7 +71,7 @@ define ([
         },
 
         filter: function() {
-        	console.debug("Filtering")
+        	console.debug("Filtering");
         	for (var i = 0; i < this.data.length; i++) {
         		var rec = this.data[i];
         		var pass = true;

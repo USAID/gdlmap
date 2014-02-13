@@ -117,6 +117,9 @@
           var rootEl = dom.byId("filter");
           try {
               var ls = new LayerStore(opLayer);
+              on(opLayer, 'update-end', function() {
+                  ls.refreshData(opLayer);
+              });
               opLayerStore = ls;
               for (var i = 0; i < filter_cfg.length; i++) {
                   var flt = new Filter(filter_cfg[i], ls);                  
