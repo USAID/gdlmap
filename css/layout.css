@@ -67,6 +67,14 @@
     display:none;
   }
 
+  .prType_input{
+    font-size: 9pt;
+    font-weight: normal;
+    color: black;
+  }
+  .prType_input>div{
+    margin-left: 10pt;
+  }
   .filterBox{
     height: 200pt;
     overflow: auto;

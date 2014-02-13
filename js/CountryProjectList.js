@@ -20,7 +20,9 @@ define([
 		return declare("CountryProjectList", [_WidgetBase, _TemplatedMixin], {
 
 			templateString: '<div>'+
-							'<div data-dojo-attach-point="filter_cb_el"></div>' +
+							'<label class="prType_input">Project Type:' +
+							'<input data-dojo-attach-point="filter_cb_el"></input>' +
+							'</label>' +
 							'<hr>' +
 							'<div data-dojo-attach-point="list_el" class="projectListContainer"></div>' +
 							'<div data-dojo-attach-point="details_container_el" class="detailsContainer">' +
