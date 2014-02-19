@@ -4,57 +4,42 @@
         "dojo/parser",
         "dojo/ready",
         "dojo/_base/lang",
-        "dojo/_base/Color",
         "dojo/_base/array",
-        "dijit/layout/BorderContainer",
-        "dijit/layout/ContentPane",
         "dijit/Dialog",
         "dojo/dom",
         "dojo/dom-construct",
         "dojo/on",
-        "dojo/store/Observable",
-        "dojo/store/Memory",
         "dojo/request",
+        "dojo/query",
         "esri/map", 
         "esri/urlUtils",
         "esri/arcgis/utils",
         "esri/graphic",
-        "esri/symbols/SimpleFillSymbol",
-        "esri/symbols/SimpleLineSymbol",
-        "esri/InfoTemplate",
         "esri/dijit/Legend",
         "esri/dijit/Scalebar",
-        "esri/dijit/Popup",
         "gdljs/MultiselectFilterView",
         "gdljs/CountryProjectList",
         "gdljs/Filter",
         "gdljs/LayerStore",
+        "dojo/NodeList-manipulate",  // Doesn't need mapping
         "dojo/domReady!"
       ], function(
         parser,
         ready,
         lang,
-        Color,
         array,
-        BorderContainer,
-        ContentPane,
         Dialog,
         dom,
         domConstruct,
         on,
-        Observable,
-        Memory,
         request,
+        query,
         Map,
         urlUtils,
         arcgisUtils,
         Graphic,
-        SimpleFillSymbol,
-        SimpleLineSymbol,
-        InfoTemplate,
         Legend,
         Scalebar,
-        Popup,
         MultiselectFilterView,
         CountryProjectList,
         Filter,
@@ -133,6 +118,11 @@
                   filterForm.watch("selectedValues", function(prop, oldV, newV) {
                       flt.set("selectedValues", newV);
                   });
+                  flt.watch(function(name, oldValue, value) {
+                    query('#' + name + 'Label').innerHTML(value);
+                  });
+                  query('#totalCountLabel').innerHTML(flt.totalCount);
+                  query('#filteredCountLabel').innerHTML(flt.filteredCount);
               }
           } catch (e) {
               console.error(e);
@@ -160,7 +150,7 @@
 
           console.debug("End Project clciked");
       }
-
+/*
       function getPopupContent(graphic) {
           console.debug("Setting content");
           var retVal = "";
@@ -174,5 +164,5 @@
           console.debug("End setting content");
           return retVal;
       }
-
+*/
 });

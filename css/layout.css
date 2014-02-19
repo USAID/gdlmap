@@ -67,6 +67,10 @@
     display:none;
   }
 
+  .filterHead{
+    padding-left: 12pt;
+    padding-right: 24pt;
+  }
   .prType_input{
     font-size: 9pt;
     font-weight: normal;
@@ -75,6 +79,12 @@
   .prType_input>div{
     margin-left: 10pt;
     width: 250pt;
+  }
+  .prType_cntLabel{
+    font-size: 8pt;
+    font-weight: normal;
+    color: black;
+    margin-top: 10pt    
   }
   .filterBox{
     height: 200pt;
@@ -93,6 +103,11 @@
   }
   .filterItemIcon.selected{
     visibility: visible;
+  }
+
+  .filterHeadIcon{
+    display: block;
+    float: right;
   }
 
   .projectListContainer{
@@ -118,6 +133,9 @@
   }
   .projectListItem:hover{
     color: #221f1f;
+  }
+  .total_counts{
+    font-size: 9pt
   }
   .detailsContainer{
     display: none;

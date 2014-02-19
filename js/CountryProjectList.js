@@ -23,6 +23,10 @@ define([
 							'<label class="prType_input">Project Type:' +
 							'<input data-dojo-attach-point="filter_cb_el"></input>' +
 							'</label>' +
+							'<div class="prType_cntLabel">There are '+
+							'<span data-dojo-attach-point="cnt_total">0</span> projects in the country, '+
+							'<span data-dojo-attach-point="cnt_filter">0</span> for selected GDL Teams, '+
+							'<span data-dojo-attach-point="cnt_type">0</span> for selected Project Type</div>'+
 							'<hr>' +
 							'<div data-dojo-attach-point="list_el" class="projectListContainer"></div>' +
 							'<div data-dojo-attach-point="details_container_el" class="detailsContainer">' +
@@ -145,13 +149,17 @@ define([
 			},
 
 			_queryStore: function() {
+
 				var q = {};
 				if (this.country) {
 					q[this.countryColumn] = this.country;
 				}
+				this.cnt_total.innerHTML = this.store.query(q).length;
+				this.cnt_filter.innerHTML = this.store.queryFiltered(q).length;
 				if (this._filterValue && this._filterValue != "All") {
 					q[this.filterColumn] = this._filterValue;
 				}
+				this.cnt_type.innerHTML = this.store.queryFiltered(q).length;
 				return this.store.queryFiltered(q);
 			},
 

@@ -9,13 +9,17 @@ define([
 	"dojo/Stateful",
 	"dijit/_WidgetBase", 
 	"dijit/_TemplatedMixin",
+	"dojo/NodeList-dom",      // no mapping required
     "dojo/NodeList-traverse"  // no mapping required
 	], function(declare, lang, dom, domConstruct, domAttr, domClass, query, Stateful, _WidgetBase, _TemplatedMixin){
 
 		return declare("MultiselectFilterView", [_WidgetBase, _TemplatedMixin], {
 
 			templateString: '<div>'+
-							'<span>${label}</span>' +
+							'<div class="filterHead">'+
+								'<span>${label}</span>'+
+								'<span class="glyphicon glyphicon-ok filterHeadIcon selected" data-dojo-attach-event="onclick: _toggleAllClickHandler"></span> ' +
+							'</div>'+
 							'<div data-dojo-attach-point="ul_el" class="filterBox list-group small">' +
 							'</div>' +
 							'</div>',
@@ -60,7 +64,29 @@ define([
 					vl.push(node.text);
 				});
 				this.set('selectedValues', vl);
-			}
+			},
 
+			_toggleAllClickHandler: function(event) {
+				vl = [];
+				if (domClass.contains(event.currentTarget, "selected")) {
+					domClass.remove(event.currentTarget, "selected glyphicon-ok");
+					domClass.add(event.currentTarget, "glyphicon-unchecked");
+
+					query(".list-group-item, .filterItemIcon", this.ul_el).removeClass("selected");
+					// query(".filterItemIcon", this.ul_el).forEach(function(node) {
+					// 	domClass.remove(node, "selected");
+					// });
+				} else{
+					domClass.remove(event.currentTarget, "glyphicon-unchecked");
+					domClass.add(event.currentTarget, "selected glyphicon-ok");
+
+					query(".list-group-item", this.ul_el).forEach(function(node) {
+						vl.push(node.text);
+					});
+					query(".list-group-item, .filterItemIcon", this.ul_el).addClass("selected");
+
+				}
+				this.set('selectedValues', vl);
+			}
 		});
 	});
