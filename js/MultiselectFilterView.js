@@ -18,7 +18,7 @@ define([
 			templateString: '<div>'+
 							'<div class="filterHead">'+
 								'<span>${label}</span>'+
-								'<span class="glyphicon glyphicon-ok filterHeadIcon selected" data-dojo-attach-event="onclick: _toggleAllClickHandler"></span> ' +
+								'<a class="filter-select-all" data-dojo-attach-event="onclick: _toggleAllClickHandler">Unselect All</a>' +
 							'</div>'+
 							'<div data-dojo-attach-point="ul_el" class="filterBox list-group small">' +
 							'</div>' +
@@ -39,7 +39,6 @@ define([
 		            	onclick: lang.hitch(this, this.filterClickHandler)
 		            }
 		            var liEl = domConstruct.create("a", liElAtts, this.ul_el, "last");
-		            //var iconEl = domConstruct.create("i", {className:"fa fa-check-square fa-fw"}, liEl, "first");
 
 		            var liIconAtts = {
 		            	className: "glyphicon glyphicon-ok filterItemIcon selected"
@@ -68,23 +67,15 @@ define([
 
 			_toggleAllClickHandler: function(event) {
 				vl = [];
-				if (domClass.contains(event.currentTarget, "selected")) {
-					domClass.remove(event.currentTarget, "selected glyphicon-ok");
-					domClass.add(event.currentTarget, "glyphicon-unchecked");
-
+				if (event.currentTarget.text == "Unselect All") {
+					event.currentTarget.innerHTML = "Select All";
 					query(".list-group-item, .filterItemIcon", this.ul_el).removeClass("selected");
-					// query(".filterItemIcon", this.ul_el).forEach(function(node) {
-					// 	domClass.remove(node, "selected");
-					// });
-				} else{
-					domClass.remove(event.currentTarget, "glyphicon-unchecked");
-					domClass.add(event.currentTarget, "selected glyphicon-ok");
-
+				} else {
+					event.currentTarget.innerHTML = "Unselect All";
 					query(".list-group-item", this.ul_el).forEach(function(node) {
 						vl.push(node.text);
 					});
 					query(".list-group-item, .filterItemIcon", this.ul_el).addClass("selected");
-
 				}
 				this.set('selectedValues', vl);
 			}

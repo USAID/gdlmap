@@ -67,7 +67,7 @@
 
             //update the app 
             dom.byId("title").innerHTML = response.itemInfo.item.title;
-            dom.byId("subtitle").innerHTML = response.itemInfo.item.snippet;
+            dom.byId("subtitle").innerHTML = response.itemInfo.item.description;
 
             //add the scalebar 
             var scalebar = new Scalebar({

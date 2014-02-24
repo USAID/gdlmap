@@ -24,9 +24,9 @@ define([
 							'<input data-dojo-attach-point="filter_cb_el"></input>' +
 							'</label>' +
 							'<div class="prType_cntLabel">There are '+
-							'<span data-dojo-attach-point="cnt_total">0</span> projects in the country, '+
-							'<span data-dojo-attach-point="cnt_filter">0</span> for selected GDL Teams, '+
-							'<span data-dojo-attach-point="cnt_type">0</span> for selected Project Type</div>'+
+							'<span data-dojo-attach-point="cnt_total">0</span> projects in the country , '+
+							'<span data-dojo-attach-point="cnt_filter">0</span> for selected GDL Teams '+
+							//'<span data-dojo-attach-point="cnt_type">0</span> for selected Project Type</div>'+
 							'<hr>' +
 							'<div data-dojo-attach-point="list_el" class="projectListContainer"></div>' +
 							'<div data-dojo-attach-point="details_container_el" class="detailsContainer">' +
@@ -58,7 +58,7 @@ define([
 				label:  "Activity Type"
 			},{
 				column: "Activity_Description",
-				label:  "Activity Decritpion"
+				label:  "Activity Descritpion"
 			},{
 				column: "GDL_Team",
 				label:  "GDL Team"
@@ -159,7 +159,7 @@ define([
 				if (this._filterValue && this._filterValue != "All") {
 					q[this.filterColumn] = this._filterValue;
 				}
-				this.cnt_type.innerHTML = this.store.queryFiltered(q).length;
+				//this.cnt_type.innerHTML = this.store.queryFiltered(q).length;
 				return this.store.queryFiltered(q);
 			},
 

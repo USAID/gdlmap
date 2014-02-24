@@ -34,23 +34,6 @@
     -o-box-shadow:4px 4px 8px #adadad;
     box-shadow:4px 4px 8px #adadad;
   }
-  /*
-  #title{
-    padding-top:2px;
-    padding-left:10px;
-    color:#000;
-    font-size:18pt;
-    text-align:left;
-    text-shadow: 0px 1px 0px #e5e5ee;
-    font-weight:700;
-  }
-  #subtitle {
-    font-size:small;
-    padding-left:40px;
-    text-shadow: 0px 1px 0px #e5e5ee;
-    color:#000;
-  }
-  */
   #leftPane{
     background-color:white;
     border:none;
@@ -90,8 +73,19 @@
     height: 200pt;
     overflow: auto;
   }
+  .filter-select-all{
+    display: block;
+    float: right;
+    cursor: pointer;
+    color: #6c6d6f;
+  }
+  .filter-select-all:hover{
+    color: black; 
+    text-decoration: none;   
+  }
   .list-group-item{
     color: #6c6d6f;
+    cursor: pointer;
   }
   .list-group-item.selected{
     color: black;
