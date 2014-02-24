@@ -66,7 +66,7 @@ define([
 				column: "Country",
 				label:  "Country"				
 			},{
-				column: "Crosscutting_Sector",
+				column: "Technical_Sector",
 				label:  "Sector"
 
 			}],
