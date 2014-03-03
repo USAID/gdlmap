@@ -1,55 +1,28 @@
       var filter_cfg = [], opLayerStore = null, map = null, ui = {};
 
       require([
-        "dojo/parser",
-        "dojo/ready",
-        "dojo/_base/lang",
-        "dojo/_base/array",
-        "dijit/Dialog",
-        "dojo/dom",
-        "dojo/dom-construct",
-        "dojo/on",
-        "dojo/request",
-        "dojo/query",
-        "esri/map", 
-        "esri/urlUtils",
-        "esri/arcgis/utils",
-        "esri/graphic",
-        "esri/dijit/Legend",
-        "esri/dijit/Scalebar",
-        "gdljs/MultiselectFilterView",
-        "gdljs/CountryProjectList",
-        "gdljs/Filter",
-        "gdljs/LayerStore",
+        "dojo/parser", "dojo/ready", "dojo/_base/lang", "dojo/_base/array", "dijit/Dialog",
+        "dojo/dom", "dojo/dom-construct", "dojo/on", "dojo/request", "dojo/query",
+        "esri/map", "esri/urlUtils", "esri/arcgis/utils", "esri/graphic", "esri/dijit/Legend",
+        "esri/dijit/Scalebar", 
+        "gdljs/MultiselectFilterView", "gdljs/CountryProjectList", "gdljs/Filter",
+        "gdljs/LayerStore", "gdljs/glStore",
         "dojo/NodeList-manipulate",  // Doesn't need mapping
         "dojo/domReady!"
       ], function(
-        parser,
-        ready,
-        lang,
-        array,
-        Dialog,
-        dom,
-        domConstruct,
-        on,
-        request,
-        query,
-        Map,
-        urlUtils,
-        arcgisUtils,
-        Graphic,
-        Legend,
-        Scalebar,
-        MultiselectFilterView,
-        CountryProjectList,
-        Filter,
-        LayerStore
+        parser, ready, lang, array, Dialog,
+        dom, domConstruct, on, request, query,
+        Map, urlUtils, arcgisUtils, Graphic, Legend,
+        Scalebar, MultiselectFilterView, CountryProjectList, Filter,
+        LayerStore, GlStore
       ) {
         ready(function(){
 
         parser.parse();
 
         request("cfg/filters.json", {handleAs: 'json'}).then(function(v) {
+
+          setWorking(true);
 
           filter_cfg = v;
 
@@ -63,7 +36,7 @@
             map = response.map;
 
             var opLayer = response.itemInfo.itemData.operationalLayers[0].layerObject;
-            on(opLayer, 'click', projectClickHandler)
+            // on(opLayer, 'click', projectClickHandler)
 
             //update the app 
             dom.byId("title").innerHTML = response.itemInfo.item.title;
@@ -101,29 +74,61 @@
           console.debug("Initialize filter");
           var rootEl = dom.byId("filter");
           try {
-              var ls = new LayerStore(opLayer);
+
+              //var ls = new LayerStore(opLayer);
+              var ls = new GlStore(opLayer, {
+                map: map
+              });
+              opLayer.hide();
+
               on(opLayer, 'update-end', function() {
                   ls.refreshData(opLayer);
               });
               opLayerStore = ls;
-              for (var i = 0; i < filter_cfg.length; i++) {
-                  var flt = new Filter(filter_cfg[i], ls);                  
-                  filter_cfg[i].filter = flt;
 
-                  var filterForm = new MultiselectFilterView({
-                      "data": flt.get("values"),
-                      "label": flt.get("label")
-                  }, domConstruct.create("div", null, rootEl, "last"));
+              opLayerStore.initialize().then(function() {
+                for (var i = 0; i < filter_cfg.length; i++) {
+                    var flt = new Filter(filter_cfg[i], ls);                  
+                    filter_cfg[i].filter = flt;
 
-                  filterForm.watch("selectedValues", function(prop, oldV, newV) {
-                      flt.set("selectedValues", newV);
-                  });
-                  flt.watch(function(name, oldValue, value) {
-                    query('#' + name + 'Label').innerHTML(value);
-                  });
-                  query('#totalCountLabel').innerHTML(flt.totalCount);
-                  query('#filteredCountLabel').innerHTML(flt.filteredCount);
-              }
+                    var filterForm = new MultiselectFilterView({
+                        "data": flt.get("values"),
+                        "label": flt.get("label")
+                    }, domConstruct.create("div", null, rootEl, "last"));
+
+                    filterForm.watch("selectedValues", function(prop, oldV, newV) {
+                        flt.set("selectedValues", newV);
+                    });
+                    flt.watch(function(name, oldValue, value) {
+                      query('#' + name + 'Label').innerHTML(value);
+                    });
+                    query('#totalCountLabel').innerHTML(flt.totalCount);
+                    query('#filteredCountLabel').innerHTML(flt.filteredCount);
+
+                    on(opLayerStore.graphicsLayer, 'click', projectClickHandler);
+
+                    setWorking(false);
+                }
+              });
+
+              // for (var i = 0; i < filter_cfg.length; i++) {
+              //     var flt = new Filter(filter_cfg[i], ls);                  
+              //     filter_cfg[i].filter = flt;
+
+              //     var filterForm = new MultiselectFilterView({
+              //         "data": flt.get("values"),
+              //         "label": flt.get("label")
+              //     }, domConstruct.create("div", null, rootEl, "last"));
+
+              //     filterForm.watch("selectedValues", function(prop, oldV, newV) {
+              //         flt.set("selectedValues", newV);
+              //     });
+              //     flt.watch(function(name, oldValue, value) {
+              //       query('#' + name + 'Label').innerHTML(value);
+              //     });
+              //     query('#totalCountLabel').innerHTML(flt.totalCount);
+              //     query('#filteredCountLabel').innerHTML(flt.filteredCount);
+              //}
           } catch (e) {
               console.error(e);
           }
@@ -150,6 +155,11 @@
 
           console.debug("End Project clciked");
       }
+
+      setWorking = function(isWorking) {
+        query("#workingDiv").style("display", isWorking ? "block" : "none");
+      };
+
 /*
       function getPopupContent(graphic) {
           console.debug("Setting content");
