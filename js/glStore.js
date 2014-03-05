@@ -118,6 +118,8 @@ define ([
             });  // executeForCount
 
             allDone.then(lang.hitch(this, function(){
+                this.map.resize();
+                this.graphicsLayer.redraw();
                 console.debug("Store update done.")
                 on.emit(this, "update-end");
             }), function(error) {

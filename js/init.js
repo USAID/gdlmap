@@ -110,25 +110,6 @@
                     setWorking(false);
                 }
               });
-
-              // for (var i = 0; i < filter_cfg.length; i++) {
-              //     var flt = new Filter(filter_cfg[i], ls);                  
-              //     filter_cfg[i].filter = flt;
-
-              //     var filterForm = new MultiselectFilterView({
-              //         "data": flt.get("values"),
-              //         "label": flt.get("label")
-              //     }, domConstruct.create("div", null, rootEl, "last"));
-
-              //     filterForm.watch("selectedValues", function(prop, oldV, newV) {
-              //         flt.set("selectedValues", newV);
-              //     });
-              //     flt.watch(function(name, oldValue, value) {
-              //       query('#' + name + 'Label').innerHTML(value);
-              //     });
-              //     query('#totalCountLabel').innerHTML(flt.totalCount);
-              //     query('#filteredCountLabel').innerHTML(flt.filteredCount);
-              //}
           } catch (e) {
               console.error(e);
           }
@@ -160,19 +141,4 @@
         query("#workingDiv").style("display", isWorking ? "block" : "none");
       };
 
-/*
-      function getPopupContent(graphic) {
-          console.debug("Setting content");
-          var retVal = "";
-          if (graphic._projects) {
-
-              retVal = cpWidget.domNode;
-              //return "There are " + graphic._projects.length + " projects in " + graphic.Country
-          } else {
-              retVal = "Project details for " + graphic.attributes.Unique_ID
-          }
-          console.debug("End setting content");
-          return retVal;
-      }
-*/
 });
