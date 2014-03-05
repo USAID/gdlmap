@@ -66,6 +66,8 @@
                 });
             }
 
+            query(".map .logo-med").after("<div class='logo-usaid'></div>");
+
           }); // create map, then
         });  // request cfg_filters, then
       });  // ready
