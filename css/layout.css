@@ -52,7 +52,7 @@
   }
 
 .logo-usaid {
-  display: inline-block;
+  display: none; /* inline-block; */
   vertical-align: bottom;
   width: 189px;
   height: 59px;
